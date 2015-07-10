@@ -32,7 +32,7 @@ def process_r_markdown(rmarkdownfile):
     warning(subprocess.Popen(command, shell=True,
         stdout=subprocess.PIPE).stdout.read())
 
-    filename = rmarkdownfile.rsplit('.')[0]
+    filename = rmarkdownfile.rsplit('.')[0].rsplit('/')[-1]
     filename = "%s.md" % filename
 
     return filename
