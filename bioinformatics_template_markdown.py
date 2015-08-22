@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ####
 # Monash Bioinformatics Platform Template Script 1.2
 ####
