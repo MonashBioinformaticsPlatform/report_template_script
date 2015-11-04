@@ -7,7 +7,7 @@
 ## Note: Set template_dir in run()!
 
 from __future__ import print_function
-import sys
+import sys, re
 import markdown
 import subprocess
 from jinja2 import Environment, FileSystemLoader
@@ -16,7 +16,6 @@ from jinja2 import Environment, FileSystemLoader
 def warning(*objs):
     print("WARNING: ", *objs, file=sys.stderr)
 
-
 def render_markdown_content(filename):
     with open(filename, "r") as myfile:
         data = myfile.read()
@@ -24,7 +23,6 @@ def render_markdown_content(filename):
     data = markdown.markdown(data,\
         extensions=['markdown.extensions.fenced_code'])
     return data
-
 
 def process_r_markdown(rmarkdownfile):
     command = "Rscript -e \'require(knitr);" +\
@@ -38,10 +36,41 @@ def process_r_markdown(rmarkdownfile):
 
     return filename
 
+def get_summary(markdown_file):
 
-def run():
-    ####
-    # Monash Bioinformatics Platform Template Script 1.2
+    summary = ''
+    summary_header = False
+
+    for i in open(markdown_file):
+        line = i.strip()
+        if line.startswith('## Summary') or line.startswith('##Summary'):
+            summary_header = True
+    
+        if line.startswith('#') and not line.startswith('## Summary') and not line.startswith('##Summary'):
+            summary_header = False
+    
+        if summary_header:
+            if '## Summary' in summary or '##Summary' in summary:
+                summary = ''
+            summary += line+'\n'
+
+    return summary
+
+def get_title(markdown_file):
+    
+    title = ''
+
+    for i in open(markdown_file):
+        line = i.strip()
+        tcheck_one = re.search('(^[#][A-z0-9])', line)
+        tcheck_two = re.search('(^[#]\W[A-z0-9])', line)
+        if tcheck_one or tcheck_two:
+            title = line.strip("#").strip()
+
+    return title
+    
+
+def run(): #### # Monash Bioinformatics Platform Template Script 1.2
     ####
     #   steve.androulakis@monash.edu
     ####
@@ -50,14 +79,9 @@ def run():
     from optparse import OptionParser
 
     parser = OptionParser()
-    parser.add_option("-m", "--markdownfile", dest="markdownfile",
+    parser.add_option("-m", "--markdown_file", dest="markdown_file",
                       help="Path to the markdown file content",
                       metavar="MARKDOWNFILE")
-    parser.add_option("-t", "--title", dest="title",
-                      help="Title of your report",
-                      metavar="TITLE")
-    parser.add_option("-s", "--summary", dest="summary",
-                      help="Report summary", metavar="SUMMARY")
     parser.add_option("-n", "--name", dest="name",
                       help="Report author name", metavar="NAME")
     parser.add_option("-e", "--email", dest="email",
@@ -71,32 +95,31 @@ def run():
 
     (options, args) = parser.parse_args()
 
-    if not options.markdownfile:
+    if not options.markdown_file:
         print("Bioinformatics Platform Template Generator")
         print("Steve Androulakis <steve.androulakis@monash.edu>")
         print("Eg. python bioinformatics_template_markdown.py -m markdown_file.md " \
-        " -t 'My Awesome Report'" \
-        " -s 'A summary of my report!'" \
         " -n 'Steve Androulakis'" \
         " -e steve.androulakis@monash.edu")
         print("")
         sys.exit()
 
-    markdownfile = options.markdownfile
-    title = options.title
-    summary = options.summary
+    markdown_file = options.markdown_file
     name = options.name
     email = options.email
     no_contents = options.no_contents
     no_contact = options.no_contact
 
-    r = False
-    filename = markdownfile
+    title = get_title(markdown_file)
+    summary = get_summary(markdown_file)
 
-    if markdownfile[-3:].lower() == 'rmd':
+    r = False
+    filename = markdown_file
+
+    if markdown_file[-3:].lower() == 'rmd':
         warning('RMD file detected. Processing...')
         r = True
-        filename = process_r_markdown(markdownfile)
+        filename = process_r_markdown(markdown_file)
 
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template('report_template.html')
