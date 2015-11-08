@@ -16,12 +16,11 @@ from jinja2 import Environment, FileSystemLoader
 def warning(*objs):
     print("WARNING: ", *objs, file=sys.stderr)
 
-def render_markdown_content(filename):
-    with open(filename, "r") as myfile:
-        data = myfile.read()
+def render_markdown_content(content):
 
-    data = markdown.markdown(data,\
+    data = markdown.markdown(content,\
         extensions=['markdown.extensions.fenced_code'])
+
     return data
 
 def process_r_markdown(rmarkdownfile):
@@ -36,26 +35,6 @@ def process_r_markdown(rmarkdownfile):
 
     return filename
 
-def get_summary(markdown_file):
-
-    summary = ''
-    summary_header = False
-
-    for i in open(markdown_file):
-        line = i.strip()
-        if line.startswith('## Summary') or line.startswith('##Summary'):
-            summary_header = True
-    
-        if line.startswith('#') and not line.startswith('## Summary') and not line.startswith('##Summary'):
-            summary_header = False
-    
-        if summary_header:
-            if '## Summary' in summary or '##Summary' in summary:
-                summary = ''
-            summary += line+'\n'
-
-    return summary
-
 def get_title(markdown_file):
     
     title = ''
@@ -68,7 +47,33 @@ def get_title(markdown_file):
             title = line.strip("#").strip()
 
     return title
+
+def get_content(markdown_file):
+
+    body = ''
+    summary = ''
+    summary_header = False
+
+    title = get_title(markdown_file)
+
+    for i in open(markdown_file):
+        line = i.strip()
+
+        line_check = line.replace(' ', '').lower().startswith('##summary')
+        if line_check:
+            summary_header = True
     
+        if line.startswith('#') and not line_check:
+            summary_header = False
+    
+        if summary_header:
+            if '## Summary' in summary or '##Summary' in summary:
+                summary = ''
+            summary += line+'\n'
+        else:
+            body += line+'\n'
+
+    return title, summary, body
 
 def run(): #### # Monash Bioinformatics Platform Template Script 1.2
     ####
@@ -110,11 +115,11 @@ def run(): #### # Monash Bioinformatics Platform Template Script 1.2
     no_contents = options.no_contents
     no_contact = options.no_contact
 
-    title = get_title(markdown_file)
-    summary = get_summary(markdown_file)
-
+    title, summary, body = get_content(markdown_file)
+    
     r = False
-    filename = markdown_file
+    # remove title from the body string
+    filename = body.replace(title, '')
 
     if markdown_file[-3:].lower() == 'rmd':
         warning('RMD file detected. Processing...')
