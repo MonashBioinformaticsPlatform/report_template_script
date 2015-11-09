@@ -9,7 +9,7 @@
 ## Installation
 
 - `git clone https://github.com/MonashBioinformaticsPlatform/report_template_script.git`
-- run `mbp_report.py` inside `src/` directory 
+- run `mbp_report.py`, which is located inside `src/` directory 
 
 ## Prerequisites
 
