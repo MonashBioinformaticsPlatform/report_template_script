@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # get directory name of the script being run
     mbp_dir = os.path.dirname(__file__)
     # make path to templates directory
-    #TODO The should be better solution then .replace()
+    #TODO There should be better solution then .replace()
     template_dir = os.path.join(mbp_dir, 'templates').replace('src/','')
     # get required arguments
     md_file, name, email, no_contents = header.get_args()
