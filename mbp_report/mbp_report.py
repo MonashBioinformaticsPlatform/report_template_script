@@ -8,8 +8,9 @@
 
 from __future__ import print_function
 from jinja2 import Environment, FileSystemLoader
-import header, get_content, get_html
+#import header, get_content, get_html
 import os
+from __init__.py import mb_file, name, email, no_contents
 
 def warning(*objs):
     print("WARNING: ", *objs, file=sys.stderr)
@@ -21,7 +22,7 @@ def run(md_file,
         template_dir
         ):
 
-    title, summary, body = get_content.get_content(md_file)
+    title, summary, body = get_content(md_file)
     
     r = False
     # remove title from the body string
@@ -39,7 +40,7 @@ def run(md_file,
                                    )
     template = env.get_template('report_template.html')
 
-    output_from_parsed_template = template.render(content=get_html.render_markdown_content(filename),
+    output_from_parsed_template = template.render(content=render_markdown_content(filename),
                                                   title=title,
                                                   summary=summary,
                                                   author_name=name,
@@ -58,7 +59,6 @@ if __name__ == "__main__":
     #TODO The should be better solution then .replace()
     template_dir = os.path.join(mbp_dir, 'templates').replace('src/','')
     # get required arguments
-    md_file, name, email, no_contents = header.get_args()
 
     print(run(md_file,
               name,
