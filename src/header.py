@@ -2,8 +2,6 @@
 # -*- coding: iso-8859-15 -*-
 
 from argparse import ArgumentParser
-from get_html import  render_markdown_content, process_r_markdown
-from get_content import get_content, get_title
 
 def get_args():
     parser = ArgumentParser(usage='%(prog)s -m markdown_file <path/to/your_md_file>',

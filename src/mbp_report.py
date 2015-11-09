@@ -32,8 +32,7 @@ def run(md_file,
         r = True
         filename = process_r_markdown(md_file)
 
-    #TODO the autoescape should really be True, but when set
-    # to True, html doesn't render...
+    # the autoescape should really be set to True, but if I set it to True, html doesn't render...
     env = Environment(loader = FileSystemLoader(template_dir), 
                                    autoescape = False
                                    )

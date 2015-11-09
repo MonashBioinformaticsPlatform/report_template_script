@@ -6,12 +6,14 @@ import subprocess
 
 def render_markdown_content(content):
 
-    data = markdown.markdown(content,\
-        extensions=['markdown.extensions.fenced_code'])
+    data = markdown.markdown(content,
+                             extensions=['markdown.extensions.fenced_code']
+                             )
 
     return data
 
 def process_r_markdown(rmarkdownfile):
+
     command = "Rscript -e \'require(knitr);" +\
     "opts_knit$set(out.format = \"md\"); knit(\"%s\")\'" % (rmarkdownfile)
 
