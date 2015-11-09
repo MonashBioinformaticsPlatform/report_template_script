@@ -25,7 +25,7 @@ def get_args():
     
     parser.add_argument("-e", "--email",
                         help="Report author email",
-                        default = 'steve.androulakis@monash.edu',
+                        default = 'bioinformatics.platform@monash.edu',
                         dest="email",
                         metavar="YOUR_EMAIL"
                         )
