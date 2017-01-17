@@ -1,0 +1,117 @@
+---
+title: "RNAsik workflow"
+output: 
+  html_notebook:
+    toc: true
+    toc_float: true
+    #toc_depth: 4
+    highlight: textmate
+    fig_caption: true
+---
+
+# Project: X project
+## Prof X Research - Month Year
+
+### Summary:
+
+This workbook documents the commands and files used to analyse x project. 
+
+Mention whether there was a problem with data and if there were additional steps to investigate.
+
+
+### Tools used:
+
+* [RNAsik ver blah](https://github.com/MonashBioinformaticsPlatform/RNAsik-pipe)
+* [BWA-MEM/Bowtie/STAR/etc ver blah]()
+* [HOMER/MACS2/etc ver blah]()
+* [MultiQC ver blah](http://multiqc.info/)
+* etc, depending on project
+
+### References used:
+
+* [Ensembl Genome X version number blah. Link to the personal copy of the genome that you used.]() - Mention if there are any personal modifications to this genome and why they were necessary
+* [Ensembl GTF file Y version number blargh. Link to personal copy of GTF file]() - Mention if there are any personal modifications to this GTF file and why they were necessary
+* [SAF file - if one was necessary to generate for featureCounts]() - Include script + GFF/GTF used to create this file
+* etc, depending on project
+
+### Workflow
+
+__Load modules/enviroments as needed__
+
+```{bash, eval=FALSE}
+
+module load RNAsik/x.y.09
+source /b/v/c/d/xenv/multiqc/bin/activate
+```
+
+```
+File locations: (This might be for your own internal reference and doesn't necessarily need to be included in what is sent out with the report)
+
+Raw data: /rawdata/person/project/raw/
+Project working directory: ~/projects/person/project/
+Reference genome: ~/references/ensembl/species/genome/x.11.blah.fa.gz
+GTF file: ~/references/ensembl/species/annotation/x.11.blah.gtf.gz
+```
+
+__Running RNAsik:__
+
+```{bash, eval=FALSE}
+
+RNAsik -align star \
+-fastaRef ~/references/ensembl/species/genome/x.11.blah.fa.gz \
+-fqDir /rawdata/person/project/raw/ \
+-fqRegex X \
+-count \
+-gtfFile ~/references/ensembl/species/annotation/x.11.blah.gtf.gz \
+-fastqc \
+-exonicRate \
+-multiqc \
+-outDir run1 \
+-prePro \
+-threads 20
+
+```
+
+
+
+There was x problem with QC. Data was untrimmed for sample 3 and 4 and showed adaptor contamination. To fix this, used [trimmomatic](http://www.usadellab.org/cms/index.php?page=trimmomatic):
+
+```{bash, eval=FALSE}
+
+trimmomatic SE \
+-threads 4 -phred33 /rawdata/person/project/raw/sample3.fq.qz trimmed_fastq/sample3.trimmed.fq.gz \
+ILLUMINACLIP:adapters.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4.15 MINLEN:30
+
+```
+
+Parameters were chosen because of blah.
+
+* [Adapters.fa]() - this is the adaptors file used to remove the contamination.
+
+RNAsik was then run again:
+
+```{bash, eval=FALSE}
+
+RNAsik -align star \
+-fastaRef ~/references/ensembl/species/genome/x.11.blah.fa.gz \
+-fqDir trimmed_fastq \
+-fqRegex X \
+-count \
+-gtfFile ~/references/ensembl/species/annotation/x.11.blah.gtf.gz \
+-fastqc \
+-exonicRate \
+-multiqc \
+-outDir run1 \
+-prePro \
+-threads 20
+
+```
+
+etc, etc, document any additional work that was done
+
+__Degust:__
+
+Loaded X file into Degust (think it's important to mention which featureCounts file to upload as RNAsik will run featureCounts under all strand parameters, thus producing multiple counts file).
+
+
+
