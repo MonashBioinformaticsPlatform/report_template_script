@@ -93,9 +93,15 @@ $j(document).ready(function() {
 		<!-- PUT YOUR TITLE HERE -->
 		<h1 class="text-center">{{title}}</h1>
 	
-                {% if not no_contact %}	
+		{% if author_name and author_email %}
 		<!-- PUT YOUR AUTHOR HERE -->
 		<p class="text-center">Contact: {{author_name}} (<a href="mailto:{{author_email}}">{{author_email}}</a>)</p>
+		{% elif author_name %}
+		<p class="text-center">Contact: {{author_name}}</p>
+
+		{% elif author_email %}
+		<p class="text-center">Contact: <a href="mailto:{{author_email}}">{{author_email}}</a></p>
+
                 {% endif %}
 
 		{% if not no_contents %}		
@@ -117,9 +123,7 @@ $j(document).ready(function() {
         </div>		
 		{% endif %}
 
-
                {{ content }}
-
 		
 		<!-- LEAVE THIS PART IN -->
 		<p class="text-center" style="padding-top: 2em; font-weight: bold">
